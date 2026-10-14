@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dua Shah | Web Developer</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <!-- React 18 + ReactDOM (CDN) -->
+  <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+  <!-- Babel standalone (JSX in the browser) -->
+  <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+
+  <style>
+    /* ---------- Theme tokens: switched via data-theme on <html> ---------- */
+    :root, [data-theme="dark"] {
+      --bg: #050a16;
+      --glow-1: rgba(37, 99, 235, .28);
+      --glow-2: rgba(34, 211, 238, .12);
+      --grid: rgba(96, 165, 250, .08);
+      --card: rgba(13, 22, 42, .62);
+      --border: rgba(96, 165, 250, .22);
+      --text: #e8eefb;
+      --muted: #9aa9c4;
+      --accent: #38bdf8;
+      --accent-2: #3b82f6;
+      --chip-bg: rgba(59, 130, 246, .12);
+      --chip-border: rgba(96, 165, 250, .3);
+      --shadow: 0 30px 70px -20px rgba(0, 0, 0, .8), 0 0 0 1px rgba(255,255,255,.04) inset;
+      --btn-text: #04101f;
+      /* background scene */
+      --bg-a: #040812; --bg-b: #0a1a3a; --bg-c: #050a16;
+      --orb-1: rgba(37, 99, 235, .55); --orb-2: rgba(34, 211, 238, .30); --orb-3: rgba(124, 58, 237, .38);
+      --dot: rgba(147, 197, 253, .26); --glyph: rgba(125, 190, 255, .24); --ring: rgba(96, 165, 250, .20);
+      --spark: #bfe3ff; --floor: rgba(56, 189, 248, .32); --floor-glow: rgba(37, 99, 235, .35);
+      --vignette: rgba(2, 5, 12, .72);
+    }
+    [data-theme="light"] {
+      --bg: #c3d6ef;
+      --bg-a: #eaf2fd; --bg-b: #c9dcf3; --bg-c: #a9c4e8;
+      --orb-1: rgba(59, 130, 246, .50); --orb-2: rgba(6, 182, 212, .42); --orb-3: rgba(139, 92, 246, .30);
+      --dot: rgba(23, 76, 196, .30); --glyph: rgba(16, 60, 140, .22); --ring: rgba(30, 91, 170, .26);
+      --spark: #ffffff; --floor: rgba(23, 76, 196, .28); --floor-glow: rgba(255, 255, 255, .75);
+      --vignette: rgba(30, 60, 115, .30);
+      --glow-1: rgba(37, 99, 235, .38);
+      --glow-2: rgba(6, 182, 212, .32);
+      --grid: rgba(25, 57, 105, .16);
+      --card: linear-gradient(145deg, rgba(219, 232, 249, .94), rgba(177, 199, 228, .92));
+      --border: rgba(37, 99, 180, .38);
+      --text: #102342;
+      --muted: #405777;
+      --accent: #075fbd;
+      --accent-2: #1556c0;
+      --chip-bg: rgba(30, 91, 170, .10);
+      --chip-border: rgba(30, 91, 170, .32);
+      --shadow: 0 34px 75px -25px rgba(18, 43, 83, .48), 0 0 0 1px rgba(255,255,255,.42) inset;
+      --btn-text: #ffffff;
+      --glow-3: rgba(59, 130, 246, .20);
+      --btn-bg: rgba(204, 222, 243, .55);
+      --btn-a: #174cc4; --btn-b: #078cae;
+      --ring-cut: #c3d4e9;
+      --banner-1: #245cc4; --banner-2: #102b5a;
+    }
+
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text);
+      background: linear-gradient(160deg, var(--bg-a), var(--bg-b) 55%, var(--bg-c));
+      background-attachment: fixed;
+    }
+
+    /* ================= Background scene (fixed, behind the card) ================= */
+    .bg-scene { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .bg-scene > * { position: absolute; }
+
+    /* 1. Aurora orbs */
+    .orb { border-radius: 50%; filter: blur(70px); will-change: transform; }
+    .orb.o1 { width: 52vmax; height: 52vmax; left: -14vmax; top: -16vmax; background: radial-gradient(circle, var(--orb-1), transparent 68%); animation: drift1 22s ease-in-out infinite alternate; }
+    .orb.o2 { width: 46vmax; height: 46vmax; right: -14vmax; top: 18%; background: radial-gradient(circle, var(--orb-2), transparent 68%); animation: drift2 26s ease-in-out infinite alternate; }
+    .orb.o3 { width: 50vmax; height: 50vmax; left: 18%; bottom: -26vmax; background: radial-gradient(circle, var(--orb-3), transparent 68%); animation: drift3 30s ease-in-out infinite alternate; }
+    @keyframes drift1 { to { transform: translate3d(9vmax, 7vmax, 0) scale(1.12); } }
+    @keyframes drift2 { to { transform: translate3d(-8vmax, -6vmax, 0) scale(1.08); } }
+    @keyframes drift3 { to { transform: translate3d(6vmax, -8vmax, 0) scale(1.15); } }
+
+    /* 2. Dot matrix, fading toward the edges */
+    .dots {
+      inset: 0;
+      background-image: radial-gradient(var(--dot) 1.2px, transparent 1.6px);
+      background-size: 26px 26px;
+      -webkit-mask-image: radial-gradient(ellipse at 50% 45%, #000 20%, transparent 75%);
+              mask-image: radial-gradient(ellipse at 50% 45%, #000 20%, transparent 75%);
+    }
+
+    /* 3. Perspective grid floor along the bottom */
+    .floor {
+      left: -50%; right: -50%; bottom: 0; height: 46vh;
+      background-image:
+        linear-gradient(var(--floor) 1.5px, transparent 1.5px),
+        linear-gradient(90deg, var(--floor) 1.5px, transparent 1.5px);
+      background-size: 64px 64px;
+      transform-origin: bottom center;
+      transform: perspective(520px) rotateX(62deg);
+      animation: floorMove 5s linear infinite;
+      -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 92%);
+              mask-image: linear-gradient(to top, #000 10%, transparent 92%);
+    }
+    @keyframes floorMove { to { background-position: 0 64px, 0 0; } }
+    .horizon {
+      left: 0; right: 0; bottom: 0; height: 34vh;
+      background: radial-gradient(ellipse 70% 100% at 50% 100%, var(--floor-glow), transparent 70%);
+    }
+
+    /* 4. Orbit rings centred behind the card */
+    .rings { left: 50%; top: 50%; width: 120vmin; height: 120vmin; margin: -60vmin 0 0 -60vmin; animation: spin 120s linear infinite; }
+    .rings svg { width: 100%; height: 100%; overflow: visible; }
+    .rings circle { fill: none; stroke: var(--ring); stroke-width: 1.2; }
+    .rings .dash { stroke-dasharray: 3 11; stroke-linecap: round; }
+    .rings .node { fill: var(--spark); stroke: none; filter: drop-shadow(0 0 6px var(--orb-2)); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* 5. Floating code glyphs */
+    .glyph {
+      font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+      font-weight: 600; color: var(--glyph); user-select: none;
+      text-shadow: 0 0 18px var(--orb-2);
+      animation: bob 9s ease-in-out infinite alternate;
+    }
+    @keyframes bob {
+      from { transform: translateY(-12px) rotate(var(--r, 0deg)); }
+      to   { transform: translateY(14px)  rotate(calc(var(--r, 0deg) + 6deg)); }
+    }
+
+    /* 6. Twinkling sparks (generated by script below) */
+    .spark { width: 3px; height: 3px; border-radius: 50%; background: var(--spark); box-shadow: 0 0 8px 1px var(--spark); animation: twinkle 4s ease-in-out infinite; }
+    @keyframes twinkle { 0%, 100% { opacity: .15; transform: scale(.7); } 50% { opacity: .95; transform: scale(1.4); } }
+
+    /* 7. Vignette to focus attention on the card */
+    .vignette { inset: 0; background: radial-gradient(ellipse at 50% 45%, transparent 45%, var(--vignette) 130%); }
+
+    @media (max-width: 640px) {
+      .glyph.hide-sm { display: none; }
+      .rings { width: 150vmin; height: 150vmin; margin: -75vmin 0 0 -75vmin; }
+      .floor { height: 34vh; background-size: 48px 48px; }
+    }
+    #root { position: relative; z-index: 1; min-height: 100%; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      -webkit-backdrop-filter: blur(18px);
+              backdrop-filter: blur(18px);
+      transition: background-color .4s ease, border-color .4s ease, box-shadow .4s ease;
+      animation: rise .7s cubic-bezier(.2,.7,.2,1) both;  /* the single entrance animation */
+    }
+    @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+    .avatar-ring {
+      padding: 3px; border-radius: 9999px;
+      background: conic-gradient(from 210deg, var(--accent-2), var(--accent), transparent 60%, var(--accent-2));
+      box-shadow: 0 0 28px -4px var(--accent-2);
+    }
+    .muted { color: var(--muted); transition: color .4s ease; }
+    .accent { color: var(--accent); }
+
+    .chip {
+      background: var(--chip-bg); border: 1px solid var(--chip-border);
+      color: var(--text); transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .chip:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 6px 18px -8px var(--accent-2); }
+
+    .icon-btn {
+      border: 1px solid var(--border); color: var(--text); background: transparent;
+      transition: border-color .2s ease, color .2s ease, transform .2s ease, background-color .2s ease;
+    }
+    .icon-btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    .connect-btn {
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      color: var(--btn-text); font-weight: 600;
+      box-shadow: 0 10px 26px -10px var(--accent-2);
+      transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+    }
+    .connect-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 30px -10px var(--accent-2); }
+    .connect-btn:active { transform: translateY(0); }
+    .connect-btn[aria-pressed="true"] {
+      background: transparent; color: var(--accent); border: 1px solid var(--accent); box-shadow: none;
+    }
+
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+    /* Banner: navy header with a fading grid (same in both themes) */
+    .banner {
+      position: relative; height: 7rem; margin: -1.5rem -1.5rem 0; overflow: hidden;
+      border-bottom: 1px solid var(--border);
+      background:
+        radial-gradient(240px 120px at 85% 0%, rgba(56,189,248,.30), transparent 70%),
+        radial-gradient(260px 140px at 8% 100%, rgba(37,99,235,.40), transparent 70%),
+        linear-gradient(135deg, #0b1d42, #071126);
+    }
+    .banner::after {
+      content: ""; position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(147,197,253,.13) 1px, transparent 1px), linear-gradient(90deg, rgba(147,197,253,.13) 1px, transparent 1px);
+      background-size: 24px 24px;
+      -webkit-mask-image: linear-gradient(#000, transparent); mask-image: linear-gradient(#000, transparent);
+    }
+    @media (min-width: 640px) { .banner { height: 8rem; margin: -2rem -2rem 0; } }
+    /* Thin lit edge along the top of the card */
+    .card::before {
+      content: ""; position: absolute; left: 12%; right: 12%; top: 0; height: 1px; z-index: 2;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+    .avatar-ring { box-shadow: 0 0 0 5px var(--bg), 0 0 30px -2px var(--accent-2); transition: box-shadow .4s ease; }
+    .icon-btn.banner-btn { color: #e8eefb; border-color: rgba(147,197,253,.35); background: rgba(5,10,22,.4); }
+    .icon-btn.banner-btn:hover { color: #7dd3fc; border-color: #7dd3fc; }
+    /* Pupils glide toward the cursor; the clip-path keeps them inside the eye */
+    .pupils { transition: transform .12s ease-out; will-change: transform; }
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Decorative background scene -->
+  <div class="bg-scene" aria-hidden="true">
+    <div class="orb o1"></div>
+    <div class="orb o2"></div>
+    <div class="orb o3"></div>
+    <div class="dots"></div>
+    <div class="rings">
+      <svg viewBox="0 0 600 600">
+        <circle cx="300" cy="300" r="290" />
+        <circle class="dash" cx="300" cy="300" r="225" />
+        <circle cx="300" cy="300" r="160" />
+        <circle class="node" cx="300" cy="10" r="4.5" />
+        <circle class="node" cx="75" cy="300" r="3.5" />
+        <circle class="node" cx="460" cy="300" r="3" />
+      </svg>
+    </div>
+    <div class="horizon"></div>
+    <div class="floor"></div>
+    <span class="glyph" style="left:6%;  top:14%; font-size:3.2rem; --r:-8deg;">&lt;/&gt;</span>
+    <span class="glyph" style="left:14%; top:62%; font-size:2.6rem; --r:6deg; animation-delay:-3s;">{ }</span>
+    <span class="glyph hide-sm" style="left:4%;  top:38%; font-size:1.8rem; --r:-4deg; animation-delay:-5s;">const</span>
+    <span class="glyph hide-sm" style="left:20%; top:82%; font-size:2rem; --r:10deg; animation-delay:-2s;">#</span>
+    <span class="glyph" style="right:7%; top:12%; font-size:2.6rem; --r:7deg; animation-delay:-4s;">=&gt;</span>
+    <span class="glyph" style="right:12%; top:66%; font-size:3rem; --r:-6deg; animation-delay:-1s;">( )</span>
+    <span class="glyph hide-sm" style="right:4%; top:40%; font-size:1.7rem; --r:5deg; animation-delay:-6s;">&lt;div&gt;</span>
+    <span class="glyph hide-sm" style="right:22%; top:84%; font-size:1.8rem; --r:-9deg; animation-delay:-7s;">;</span>
+    <span class="glyph hide-sm" style="left:30%; top:6%; font-size:1.6rem; --r:4deg; animation-delay:-2.5s;">[ ]</span>
+    <span class="glyph hide-sm" style="right:32%; top:5%; font-size:1.6rem; --r:-5deg; animation-delay:-8s;">git</span>
+    <div class="vignette"></div>
+  </div>
+
+  <div id="root"></div>
+
+  <script>
+    // Generate twinkling sparks with a seeded random so the layout is stable between loads.
+    (function () {
+      var scene = document.querySelector(".bg-scene"), seed = 7;
+      function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+      for (var i = 0; i < 28; i++) {
+        var d = document.createElement("i");
+        d.className = "spark";
+        d.style.left = (rnd() * 100) + "%";
+        d.style.top = (rnd() * 100) + "%";
+        d.style.animationDelay = (-rnd() * 4) + "s";
+        d.style.animationDuration = (3 + rnd() * 4) + "s";
+        scene.insertBefore(d, scene.querySelector(".vignette"));
+      }
+    })();
+  </script>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    /* ------------------------------------------------------------------
+       useEyeTracking: eye-tracking logic
+       - One "pointermove" listener on window, so it works over the card,
+         buttons, background... anywhere on the page.
+       - Finds the centre of the eyes on screen, takes the direction from
+         there to the cursor (atan2), and scales it by distance.
+       - The offset is limited to AX x AY, a smaller ellipse than the eye,
+         so pupils can never leave the eyeball.
+       - Updates are throttled with requestAnimationFrame; the listener
+         and any pending frame are removed on unmount.
+    ------------------------------------------------------------------ */
+    function useEyeTracking(svgRef) {
+      const [look, setLook] = useState({ x: 0, y: 0 });   // pupil offset in SVG units
+
+      useEffect(() => {
+        const AX = 4.2, AY = 2.8; // SVG viewBox units; natural but clearly visible eye movement
+        let frame = 0, pointer = null;
+
+        const update = () => {
+          frame = 0;
+          const el = svgRef.current;
+          if (!el) return;
+          if (!pointer) { setLook({ x: 0, y: 0.25 }); return; }
+          const r = el.getBoundingClientRect();
+          const cx = r.left + r.width * 0.5;
+          const cy = r.top + r.height * 0.475;
+          // The cursor is measured against the avatar's on-screen position,
+          // so tracking continues even when the pointer is outside the card.
+          const dx = pointer.x - cx, dy = pointer.y - cy;
+          const angle = Math.atan2(dy, dx);
+          const strength = Math.min(Math.hypot(dx, dy) / 150, 1);
+          setLook({ x: Math.cos(angle) * AX * strength, y: Math.sin(angle) * AY * strength });
+        };
+        const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+        const onMove = (e) => { pointer = { x: e.clientX, y: e.clientY }; schedule(); };
+        const onOut = (e) => {
+          if (!e.relatedTarget) { pointer = null; schedule(); }
+        };
+        window.addEventListener("pointermove", onMove, { passive: true });
+        window.addEventListener("scroll", schedule, { passive: true, capture: true });
+        window.addEventListener("resize", schedule);
+        document.addEventListener("mouseout", onOut);
+        return () => {
+          window.removeEventListener("pointermove", onMove);
+          window.removeEventListener("scroll", schedule, true);
+          window.removeEventListener("resize", schedule);
+          document.removeEventListener("mouseout", onOut);
+          if (frame) cancelAnimationFrame(frame);
+        };
+      }, []);
+
+      return look;
+    }
+
+    /* ------------------------------------------------------------------
+       DevAvatar: inline SVG illustration (no photo, no external image).
+       Dark hair, natural expressive eyes, no glasses, navy blazer, tech-grid backdrop.
+    ------------------------------------------------------------------ */
+    function DevAvatar() {
+      const svgRef = useRef(null);
+      const look = useEyeTracking(svgRef);                  // pupil offset, updated as the cursor moves
+      const pupilTransform = `translate(${look.x} ${look.y})`;
+      return (
+        <svg ref={svgRef} viewBox="0 0 200 200" className="block w-full h-full" role="img"
+             aria-label="Illustrated avatar of a young female web developer with dark hair, natural eyes, and a navy blazer">
+          <defs>
+            <linearGradient id="av-bg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stopColor="#0b1b3d" />
+              <stop offset="1" stopColor="#050a16" />
+            </linearGradient>
+            <radialGradient id="av-glow" cx=".5" cy=".4" r=".6">
+              <stop offset="0" stopColor="#38bdf8" stopOpacity=".35" />
+              <stop offset="1" stopColor="#38bdf8" stopOpacity="0" />
+            </radialGradient>
+            <linearGradient id="av-hair" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stopColor="#1f2937" />
+              <stop offset=".5" stopColor="#0d1018" />
+              <stop offset="1" stopColor="#0d1018" />
+            </linearGradient>
+            <pattern id="av-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M20 0H0V20" fill="none" stroke="#60a5fa" strokeOpacity=".14" strokeWidth=".8" />
+            </pattern>
+          </defs>
+
+          {/* Backdrop */}
+          <rect width="200" height="200" fill="url(#av-bg)" />
+          <rect width="200" height="200" fill="url(#av-grid)" />
+          <rect width="200" height="200" fill="url(#av-glow)" />
+          <text x="150" y="40" fontFamily="monospace" fontSize="15" fill="#38bdf8" opacity=".55">&lt;/&gt;</text>
+          <circle cx="32" cy="48" r="2.2" fill="#38bdf8" opacity=".7" />
+          <circle cx="44" cy="62" r="1.4" fill="#60a5fa" opacity=".6" />
+
+          {/* Hair (back layer) */}
+          <path d="M56 108 C46 52 78 26 100 26 C124 26 154 50 144 108 C142 132 150 152 142 172 L58 172 C50 152 58 132 56 108 Z" fill="url(#av-hair)" />
+
+          {/* Neck */}
+          <path d="M89 118 H111 V152 H89 Z" fill="#d49f7e" />
+          <path d="M89 134 Q100 146 111 134 V152 H89 Z" fill="#b97f61" opacity=".55" />
+
+          {/* Blazer + inner top */}
+          <path d="M14 200 C14 164 52 148 100 148 C148 148 186 164 186 200 Z" fill="#12244d" />
+          <path d="M82 150 L100 184 L118 150 Z" fill="#dbe7fb" />
+          <path d="M82 150 L96 200 L62 200 L58 160 Z M118 150 L104 200 L138 200 L142 160 Z" fill="#0c1a3a" />
+          <path d="M82 150 L96 200 M118 150 L104 200" stroke="#38bdf8" strokeOpacity=".7" strokeWidth="1.2" fill="none" />
+
+          {/* Head */}
+          <ellipse cx="100" cy="92" rx="33" ry="38" fill="#e3b08f" />
+
+          {/* Fringe: side-swept dark hair */}
+          <path d="M64 92 C60 54 86 40 104 43 C128 46 142 64 136 94 C130 74 116 62 98 60 C82 62 70 74 64 92 Z" fill="url(#av-hair)" />
+          {/* Front locks over shoulders */}
+          <path d="M60 96 C56 120 58 140 52 160 C66 152 70 128 68 100 Z" fill="url(#av-hair)" />
+          <path d="M140 96 C144 120 142 140 148 160 C134 152 130 128 132 100 Z" fill="url(#av-hair)" />
+
+          {/* Brows */}
+          <path d="M77 83 Q86 78 94 82" stroke="#0d1018" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+          <path d="M106 82 Q114 78 123 83" stroke="#0d1018" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+          {/* Eyes: fixed whites + lids; only the pupil groups move */}
+          <ellipse cx="86" cy="95" rx="6" ry="5" fill="#f4f7fb" />
+          <ellipse cx="114" cy="95" rx="6" ry="5" fill="#f4f7fb" />
+          <clipPath id="eyeL"><ellipse cx="86" cy="95" rx="6" ry="5" /></clipPath>
+          <clipPath id="eyeR"><ellipse cx="114" cy="95" rx="6" ry="5" /></clipPath>
+          <g clipPath="url(#eyeL)">
+            <g className="pupils" transform={pupilTransform}>
+              <circle cx="86" cy="95" r="3.1" fill="#3a2418" />
+              <circle cx="86" cy="95" r="1.5" fill="#090a0f" />
+              <circle cx="87.1" cy="93.9" r=".8" fill="#fff" />
+            </g>
+          </g>
+          <g clipPath="url(#eyeR)">
+            <g className="pupils" transform={pupilTransform}>
+              <circle cx="114" cy="95" r="3.1" fill="#3a2418" />
+              <circle cx="114" cy="95" r="1.5" fill="#090a0f" />
+              <circle cx="115.1" cy="93.9" r=".8" fill="#fff" />
+            </g>
+          </g>
+          <path d="M79.6 94.2 Q86 88.6 92.4 94.2" stroke="#0d1018" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+          <path d="M107.6 94.2 Q114 88.6 120.4 94.2" stroke="#0d1018" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+          {/* Nose + smile */}
+          <path d="M100 98 Q97 108 101 110" stroke="#b97f61" strokeWidth="1.6" strokeLinecap="round" fill="none" />
+          <path d="M91 118 Q100 125 109 118" stroke="#a5594f" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+        </svg>
+      );
+    }
+
+    /* ------------------------------------------------------------------
+       Small inline icons (no icon library needed)
+    ------------------------------------------------------------------ */
+    const GitHubIcon = () => (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor" aria-hidden="true">
+        <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.35.96.1-.74.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.76 0c2.2-1.49 3.17-1.18 3.17-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z" />
+      </svg>
+    );
+    const LinkedInIcon = () => (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor" aria-hidden="true">
+        <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45Z" />
+      </svg>
+    );
+    const SunIcon = () => (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+      </svg>
+    );
+    const MoonIcon = () => (
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+      </svg>
+    );
+    const CheckIcon = () => (
+      <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M5 12.5l4.5 4.5L19 7.5" />
+      </svg>
+    );
+
+    /* ------------------------------------------------------------------
+       ProfileCard (reusable)
+       Props:
+         name     - string, full name
+         role     - string, job title
+         bio      - string, short description
+         skills   - string[], rendered as badges with .map()
+         avatar   - React node shown in the circular frame
+         github   - string, GitHub profile URL
+         linkedin - string, LinkedIn profile URL
+    ------------------------------------------------------------------ */
+    function ProfileCard({ name, role, bio, skills, avatar, github, linkedin }) {
+      // STATE 1: dark/light theme. Default is dark.
+      const [isDark, setIsDark] = useState(true);
+      // STATE 2: Connect button. false = "Let's Connect", true = "Connected".
+      const [connected, setConnected] = useState(false);
+
+      // Whenever isDark changes, update data-theme on <html>.
+      // CSS variables switch, so the whole page (not just the card) changes with a smooth transition.
+      useEffect(() => {
+        document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+      }, [isDark]);
+
+      // Social links are built from props, then rendered with .map()
+      const socials = [
+        { label: "GitHub", href: github, icon: <GitHubIcon /> },
+        { label: "LinkedIn", href: linkedin, icon: <LinkedInIcon /> },
+      ];
+
+      return (
+        <main className="min-h-screen w-full flex items-center justify-center px-4 py-10">
+          <article className="card relative overflow-hidden w-full max-w-[28rem] sm:max-w-[30rem] rounded-3xl p-6 sm:p-8" aria-label={`${name} profile card`}>
+
+            {/* Decorative banner behind the avatar */}
+            <div className="banner" aria-hidden="true" />
+
+            {/* Theme toggle: onClick flips the isDark state */}
+            <button
+              type="button"
+              onClick={() => setIsDark(!isDark)}
+              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              className="icon-btn banner-btn absolute top-4 right-4 z-10 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
+            >
+              {isDark ? <SunIcon /> : <MoonIcon />}
+            </button>
+
+            {/* Identity: avatar overlaps the banner */}
+            <div className="relative -mt-[4.25rem] sm:-mt-[4.75rem] flex flex-col items-center text-center">
+              <div className="avatar-ring w-32 h-32 sm:w-36 sm:h-36">
+                <div className="w-full h-full rounded-full overflow-hidden">{avatar}</div>
+              </div>
+
+              <h1 className="mt-5 text-[1.75rem] sm:text-3xl font-bold tracking-tight">{name}</h1>
+              <p className="accent mt-1 text-base font-medium">{role}</p>
+              <span className="chip mt-3 inline-block rounded-full px-3 py-1 text-xs font-medium">
+                BSCS Recent Graduate
+              </span>
+              <p className="muted mt-5 text-sm sm:text-base leading-relaxed max-w-sm">{bio}</p>
+            </div>
+
+            {/* Skills: one badge per array item, rendered with .map() */}
+            <section className="mt-7" aria-label="Skills">
+              <div className="flex items-center gap-3" aria-hidden="true">
+                <div className="h-px flex-1" style={{ background: "linear-gradient(90deg, transparent, var(--border))" }} />
+                <span className="muted text-xs font-semibold tracking-wide">Skills</span>
+                <div className="h-px flex-1" style={{ background: "linear-gradient(270deg, transparent, var(--border))" }} />
+              </div>
+              <ul className="mt-4 flex flex-wrap justify-center gap-2">
+                {skills.map((skill) => (
+                  <li key={skill} className="chip rounded-lg px-3 py-1.5 text-sm font-medium flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--accent)" }} />
+                    {skill}
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            {/* Actions: Connect button (toggles `connected`) + social links from props */}
+            <div className="mt-7 flex flex-col gap-3">
+              <button
+                type="button"
+                onClick={() => setConnected(!connected)}
+                aria-pressed={connected}
+                className="connect-btn h-12 w-full rounded-xl flex items-center justify-center gap-2 text-sm cursor-pointer"
+              >
+                {connected && <CheckIcon />}
+                {connected ? "Connected" : "Let's Connect"}
+              </button>
+
+              <div className="grid grid-cols-2 gap-3">
+                {socials.map((s) => (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${name} on ${s.label} (opens in a new tab)`}
+                    className="icon-btn h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-medium"
+                  >
+                    {s.icon}
+                    <span>{s.label}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </article>
+        </main>
+      );
+    }
+
+    /* ------------------------------------------------------------------
+       App: supplies the data (props) to ProfileCard
+    ------------------------------------------------------------------ */
+    function App() {
+      return (
+        <ProfileCard
+          name="Dua Shah"
+          role="Web Developer"
+          bio="I'm a recent BSCS graduate passionate about web development and building responsive websites. I enjoy exploring modern web technologies and creating user-friendly web experiences."
+          skills={["HTML", "CSS", "JavaScript"]}
+          avatar={<DevAvatar />}
+          github="https://github.com/duashah110"
+          linkedin="https://www.linkedin.com/in/dua-shah-a718ab260/"
+        />
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
